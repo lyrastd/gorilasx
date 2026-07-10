@@ -99,7 +99,7 @@ app.post("/api/send-email", async (req, res) => {
         ],
         from: {
           email: fromEmail.trim(),
-          name: "Dojo TeamGorilas \u{1F94B}"
+          name: "\u{1F94B} TeamGorilas X \u{1F94B}"
         },
         content: [
           {
