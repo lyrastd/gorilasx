@@ -45,7 +45,8 @@ if (!import_fs.default.existsSync(ALARMES_DIR)) {
 var defaultSettings = {
   appName: "TeamGorilas BJJ",
   accentColor: "amber",
-  usingCustomLogo: false
+  usingCustomLogo: false,
+  requireInvite: false
 };
 function readSettings() {
   try {
@@ -185,10 +186,11 @@ app.get("/api/app-settings", (req, res) => {
   });
 });
 app.post("/api/app-settings", (req, res) => {
-  const { appName, accentColor } = req.body;
+  const { appName, accentColor, requireInvite } = req.body;
   const current = readSettings();
   if (appName !== void 0) current.appName = appName;
   if (accentColor !== void 0) current.accentColor = accentColor;
+  if (requireInvite !== void 0) current.requireInvite = requireInvite;
   writeSettings(current);
   res.json({ success: true, settings: current });
 });
