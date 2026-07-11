@@ -132,9 +132,9 @@ app.post("/api/send-email", async (req, res) => {
 });
 app.get("/api/emailjs-config", (req, res) => {
   res.json({
-    emailjsServiceId: process.env.VITE_EMAILJS_SERVICE_ID || process.env.EMAILJS_SERVICE_ID || "",
-    emailjsTemplateId: process.env.VITE_EMAILJS_TEMPLATE_ID || process.env.EMAILJS_TEMPLATE_ID || "",
-    emailjsPublicKey: process.env.VITE_EMAILJS_PUBLIC_KEY || process.env.EMAILJS_PUBLIC_KEY || ""
+    emailjsServiceId: process.env.VITE_EMAILJS_SERVICE_ID || process.env.EMAILJS_SERVICE_ID || "gorilas_service",
+    emailjsTemplateId: process.env.VITE_EMAILJS_TEMPLATE_ID || process.env.EMAILJS_TEMPLATE_ID || "template_jk7xs7j",
+    emailjsPublicKey: process.env.VITE_EMAILJS_PUBLIC_KEY || process.env.EMAILJS_PUBLIC_KEY || "GStDulII7zMY57eIx"
   });
 });
 app.post("/api/send-push", async (req, res) => {
