@@ -130,6 +130,13 @@ app.post("/api/send-email", async (req, res) => {
     return res.status(500).json({ error: err.message || "Erro interno ao enviar e-mail" });
   }
 });
+app.get("/api/emailjs-config", (req, res) => {
+  res.json({
+    emailjsServiceId: process.env.VITE_EMAILJS_SERVICE_ID || process.env.EMAILJS_SERVICE_ID || "",
+    emailjsTemplateId: process.env.VITE_EMAILJS_TEMPLATE_ID || process.env.EMAILJS_TEMPLATE_ID || "",
+    emailjsPublicKey: process.env.VITE_EMAILJS_PUBLIC_KEY || process.env.EMAILJS_PUBLIC_KEY || ""
+  });
+});
 app.post("/api/send-push", async (req, res) => {
   const { usernames, title, body } = req.body;
   if (!title || !body) {
