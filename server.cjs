@@ -72,7 +72,7 @@ app.use("/logo", import_express.default.static(LOGO_DIR));
 app.use("/logo2", import_express.default.static(LOGO2_DIR));
 app.use("/alarmes", import_express.default.static(ALARMES_DIR));
 app.post("/api/send-email", async (req, res) => {
-  const { to, subject, body } = req.body;
+  const { to, subject, body, attachments } = req.body;
   if (!to || !subject || !body) {
     return res.status(400).json({ error: "Campos obrigat\xF3rios ausentes: to, subject, body" });
   }
@@ -109,7 +109,8 @@ app.post("/api/send-email", async (req, res) => {
             type: "text/html",
             value: body
           }
-        ]
+        ],
+        ...attachments && attachments.length > 0 ? { attachments } : {}
       })
     });
     if (!response.ok) {
