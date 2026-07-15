@@ -46,7 +46,9 @@ var defaultSettings = {
   appName: "TeamGorilas BJJ",
   accentColor: "amber",
   usingCustomLogo: false,
-  requireInvite: false
+  requireInvite: false,
+  hasRegisteredTeacher: false,
+  enableStudentPayments: false
 };
 function readSettings() {
   try {
@@ -138,14 +140,15 @@ app.get("/api/emailjs-config", (req, res) => {
   });
 });
 app.post("/api/send-push", async (req, res) => {
-  const { usernames, title, body } = req.body;
+  const { usernames, externalIds, title, body } = req.body;
   if (!title || !body) {
     return res.status(400).json({ error: "Campos obrigat\xF3rios ausentes: title, body" });
   }
   const appId = process.env.VITE_ONESIGNAL_APP_ID || process.env.ONESIGNAL_APP_ID;
   const restApiKey = process.env.ONESIGNAL_REST_API_KEY;
+  const targetIds = usernames || externalIds;
   if (!appId || !restApiKey || restApiKey.trim() === "" || restApiKey === "MY_ONESIGNAL_REST_API_KEY") {
-    console.log(`[SIMULA\xC7\xC3O ONESIGNAL] Nenhuma chave configurada. Simulando envio para: ${usernames ? usernames.join(", ") : "Todos"}`);
+    console.log(`[SIMULA\xC7\xC3O ONESIGNAL] Nenhuma chave configurada. Simulando envio para: ${targetIds ? targetIds.join(", ") : "Todos"}`);
     return res.json({
       success: true,
       simulated: true,
@@ -158,8 +161,8 @@ app.post("/api/send-push", async (req, res) => {
       headings: { en: title, pt: title },
       contents: { en: body, pt: body }
     };
-    if (usernames && Array.isArray(usernames) && usernames.length > 0 && !usernames.includes("all")) {
-      payload.include_external_user_ids = usernames;
+    if (targetIds && Array.isArray(targetIds) && targetIds.length > 0 && !targetIds.includes("all")) {
+      payload.include_external_user_ids = targetIds;
     } else {
       payload.included_segments = ["Subscribed Users"];
     }
@@ -177,6 +180,14 @@ app.post("/api/send-push", async (req, res) => {
       return res.status(response.status).json({ error: `Erro no OneSignal: ${errText}` });
     }
     const data = await response.json();
+    if (data && data.errors && Array.isArray(data.errors) && data.errors.includes("All included players are not subscribed")) {
+      console.log("[ONESIGNAL INFO] Nenhum destinat\xE1rio est\xE1 inscrito no OneSignal para receber notifica\xE7\xF5es no momento (comum em testes locais ou dentro de iframes).");
+      return res.json({
+        success: true,
+        warning: "Nenhum destinat\xE1rio inscrito para receber push no momento",
+        data: { id: data.id || "", warning: "All included players are not subscribed" }
+      });
+    }
     console.log("[ONESIGNAL SUCESSO] Notifica\xE7\xE3o enviada:", data);
     return res.json({ success: true, data });
   } catch (err) {
@@ -193,11 +204,13 @@ app.get("/api/app-settings", (req, res) => {
   });
 });
 app.post("/api/app-settings", (req, res) => {
-  const { appName, accentColor, requireInvite } = req.body;
+  const { appName, accentColor, requireInvite, hasRegisteredTeacher, enableStudentPayments } = req.body;
   const current = readSettings();
   if (appName !== void 0) current.appName = appName;
   if (accentColor !== void 0) current.accentColor = accentColor;
   if (requireInvite !== void 0) current.requireInvite = requireInvite;
+  if (hasRegisteredTeacher !== void 0) current.hasRegisteredTeacher = hasRegisteredTeacher;
+  if (enableStudentPayments !== void 0) current.enableStudentPayments = enableStudentPayments;
   writeSettings(current);
   res.json({ success: true, settings: current });
 });
