@@ -48,7 +48,8 @@ var defaultSettings = {
   usingCustomLogo: false,
   requireInvite: false,
   hasRegisteredTeacher: false,
-  enableStudentPayments: false
+  enableStudentPayments: false,
+  enableStudentEvolution: true
 };
 function readSettings() {
   try {
@@ -205,13 +206,14 @@ app.get("/api/app-settings", (req, res) => {
   });
 });
 app.post("/api/app-settings", (req, res) => {
-  const { appName, accentColor, requireInvite, hasRegisteredTeacher, enableStudentPayments } = req.body;
+  const { appName, accentColor, requireInvite, hasRegisteredTeacher, enableStudentPayments, enableStudentEvolution } = req.body;
   const current = readSettings();
   if (appName !== void 0) current.appName = appName;
   if (accentColor !== void 0) current.accentColor = accentColor;
   if (requireInvite !== void 0) current.requireInvite = requireInvite;
   if (hasRegisteredTeacher !== void 0) current.hasRegisteredTeacher = hasRegisteredTeacher;
   if (enableStudentPayments !== void 0) current.enableStudentPayments = enableStudentPayments;
+  if (enableStudentEvolution !== void 0) current.enableStudentEvolution = enableStudentEvolution;
   writeSettings(current);
   res.json({ success: true, settings: current });
 });
